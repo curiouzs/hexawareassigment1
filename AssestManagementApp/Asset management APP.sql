@@ -84,7 +84,7 @@ INSERT INTO maintenance_records (maintenance_id, asset_id, maintenance_date, des
 
 -- Inserting sample data into the asset_allocations table
 INSERT INTO asset_allocations (allocation_id, asset_id, employee_id, allocation_date, return_date) VALUES
-(1, 1, 1, '2023-01-16', NULL),
+(1, 1, 1, '2023-01-16', 2023-03-11),
 (2, 2, 2, '2023-02-11', '2023-05-11'),
 (3, 3, 3, '2023-03-21', NULL),
 (4, 4, 4, '2023-03-21', '2023-06-21'),
@@ -98,3 +98,8 @@ INSERT INTO reservations (reservation_id, asset_id, employee_id, reservation_dat
 (4, 2, 2, '2023-02-05', '2023-02-10', '2023-02-15', 'Cancelled'),
 (5, 5, 5, '2023-05-20', '2023-05-25', '2023-05-30', 'Confirmed');
 
+select * from employees;
+select * from assets;
+select * from maintenance_records;
+select * from asset_allocations;
+select * from reservations;
