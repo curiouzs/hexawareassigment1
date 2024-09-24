@@ -17,7 +17,8 @@ CREATE TABLE Products(
 	[name] VARCHAR(100) NOT NULL,
 	[description] VARCHAR(255) NOT NULL,
 	price DECIMAL(10,2) , 
-	stockqnt INT CHECK (stockqnt >= 0)
+	stockqnt INT CHECK (stockqnt >= 0),
+	category VARCHAR(60) NOT NULL
 )
 
 CREATE TABLE Cart(
@@ -69,17 +70,17 @@ INSERT INTO Customer (customer_id, first_name, last_name, email, [password], [ad
 INSERT INTO Customer (customer_id, first_name, last_name, email, [password], [address]) VALUES
 (11, 'Lokesh', 'Krishnaa', 'mymail@example.com', 'mypasswordisnull', 'Near Elon Musk SpaceX, Texas');
 
-INSERT INTO Products (product_id, [name], [description], price, stockqnt) VALUES
-(1, 'Laptop', 'High-performance laptop', 800.00, 10),
-(2, 'Smartphone', 'Latest smartphone', 600.00, 15),
-(3, 'Tablet', 'Portable tablet', 300.00, 20),
-(4, 'Headphones', 'Noise-canceling', 150.00, 30),
-(5, 'TV', '4K Smart TV', 900.00, 5),
-(6, 'Coffee Maker', 'Automatic coffee maker', 50.00, 25),
-(7, 'Refrigerator', 'Energy-efficient', 700.00, 10),
-(8, 'Microwave Oven', 'Countertop microwave', 80.00, 15),
-(9, 'Blender', 'High-speed blender', 70.00, 20),
-(10, 'Vacuum Cleaner', 'Bagless vacuum cleaner', 120.00, 10);
+INSERT INTO Products (product_id, [name], [description], price, stockqnt, category) VALUES
+(1, 'Laptop', 'High-performance laptop', 800.00, 10, 'Electronics'),
+(2, 'Smartphone', 'Latest smartphone', 600.00, 15, 'Electronics'),
+(3, 'Tablet', 'Portable tablet', 300.00, 20, 'Electronics'),
+(4, 'Headphones', 'Noise-canceling', 150.00, 30, 'Accessories'),
+(5, 'TV', '4K Smart TV', 900.00, 5, 'Electronics'),
+(6, 'Coffee Maker', 'Automatic coffee maker', 50.00, 25, 'Appliances'),
+(7, 'Refrigerator', 'Energy-efficient', 700.00, 10, 'Appliances'),
+(8, 'Microwave Oven', 'Countertop microwave', 80.00, 15, 'Appliances'),
+(9, 'Blender', 'High-speed blender', 70.00, 20, 'Appliances'),
+(10, 'Vacuum Cleaner', 'Bagless vacuum cleaner', 120.00, 10, 'Appliances');
 
 INSERT INTO Orders (order_id, customer_id, order_date, total_price, shipping_address) VALUES
 (1, 1, '2023-01-05', 1200.00, '123 Main St, City'),
@@ -149,7 +150,7 @@ SELECT *
 FROM Orders
 WHERE total_price BETWEEN 500 AND 1000;
 
---6. Find Products which name end with letter ‘r’.
+--6. Find Products which name end with letter â€˜râ€™.
 SELECT *
 FROM Products
 WHERE name LIKE '%r';
@@ -168,7 +169,7 @@ WHERE YEAR(o.order_date) = 2023;
 --9. Determine the Minimum Stock Quantity for Each Product Category.
 SELECT [name], MIN(stockqnt) as minimum_qnt 
 FROM Products
-GROUP BY name;
+GROUP BY Category;
 
 --10. Calculate the Total Amount Spent by Each Customer.
 SELECT c.customer_id, c.first_name, c.last_name, SUM(o.total_price) AS money_spent
@@ -215,7 +216,7 @@ WHERE customer_id NOT IN
 
 --17. Subquery to Calculate the Percentage of Total Revenue for a Product.
 SELECT p.product_id, p.name, 
-    (SUM(o.itemAmount) / (SELECT SUM(itemAmount) FROM OrderItems) * 100) 
+    ROUND(SUM(o.itemAmount) / (SELECT SUM(itemAmount) FROM OrderItems) * 100, 2) 
 	AS revenue_percentage
 FROM Products p
 JOIN OrderItems o ON p.product_id = o.product_id
@@ -228,7 +229,12 @@ FROM Products
 WHERE stockqnt < (SELECT AVG(stockqnt) FROM Products);
 
 --19. Subquery to Find Customers Who Placed High-Value Orders.
--- Here high value orders are which are above $800
-SELECT *
-FROM Customer c
-WHERE c.customer_id IN (SELECT customer_id FROM Orders WHERE total_price > 800);
+SELECT TOP 1 c.customer_id, c.first_name, c.last_name, orders.spent
+FROM Customers c
+JOIN (
+    SELECT o.customer_id, SUM(o.total_price) AS spent
+    FROM Orders o
+    GROUP BY o.customer_id
+) AS orders
+ON c.customer_id = orders.customer_id
+ORDER BY orders.spent DESC;
