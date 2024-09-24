@@ -3,7 +3,7 @@ CREATE DATABASE Ecommerce;
 USE Ecommerce;
 
 -- CREATING TABLES
-CREATE TABLE Customer(
+CREATE TABLE Customers(
 	customer_id INT PRIMARY KEY, 
 	first_name VARCHAR(100) NOT NULL,
 	last_name VARCHAR(100) NOT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE OrderItems (
 );
 
 --INSERTING VALUES
-INSERT INTO Customer (customer_id, first_name, last_name, email, [password], [address]) VALUES
+INSERT INTO Customers (customer_id, first_name, last_name, email, [password], [address]) VALUES
 (1, 'John', 'Doe', 'johndoe@example.com', 'password123', '123 Main St, City'),
 (2, 'Jane', 'Smith', 'janesmith@example.com', 'password456', '456 Elm St, Town'),
 (3, 'Robert', 'Johnson', 'robert@example.com', 'password789', '789 Oak St, Village'),
@@ -67,7 +67,7 @@ INSERT INTO Customer (customer_id, first_name, last_name, email, [password], [ad
 (9, 'William', 'Taylor', 'william@example.com', 'password606', '432 Spruce St, Province'),
 (10, 'Olivia', 'Adams', 'olivia@example.com', 'password707', '765 Fir St, Territory');
 
-INSERT INTO Customer (customer_id, first_name, last_name, email, [password], [address]) VALUES
+INSERT INTO Customers (customer_id, first_name, last_name, email, [password], [address]) VALUES
 (11, 'Lokesh', 'Krishnaa', 'mymail@example.com', 'mypasswordisnull', 'Near Elon Musk SpaceX, Texas');
 
 INSERT INTO Products (product_id, [name], [description], price, stockqnt, category) VALUES
@@ -162,43 +162,43 @@ WHERE customer_id = 5;
 
 --8. Find Customers Who Placed Orders in 2023.
 SELECT c.*
-FROM Customer c
+FROM Customers c
 JOIN Orders o ON c.customer_id = o.customer_id
 WHERE YEAR(o.order_date) = 2023;
 
 --9. Determine the Minimum Stock Quantity for Each Product Category.
 SELECT [name], MIN(stockqnt) as minimum_qnt 
 FROM Products
-GROUP BY Category;
+GROUP BY category;
 
 --10. Calculate the Total Amount Spent by Each Customer.
 SELECT c.customer_id, c.first_name, c.last_name, SUM(o.total_price) AS money_spent
-FROM Customer c
+FROM Customers c
 JOIN Orders o on o.customer_id = c.customer_id
 GROUP BY c.customer_id, c.first_name, c.last_name
 
 --11. Find the Average Order Amount for Each Customer.
 SELECT c.customer_id, c.first_name, c.last_name, AVG(o.total_price) AS average_order_amount
-FROM Customer c
+FROM Customers c
 JOIN Orders o on o.customer_id = c.customer_id
 GROUP BY c.customer_id, c.first_name, c.last_name
 
 --12. Count the Number of Orders Placed by Each Customer.
 SELECT o.customer_id, c.first_name, c.last_name, COUNT(o.order_id) AS no_of_order
 FROM Orders o
-JOIN Customer c on c.customer_id = o.customer_id
+JOIN Customers c on c.customer_id = o.customer_id
 GROUP BY o.customer_id, c.first_name, c.last_name;
 
 --13. Find the Maximum Order Amount for Each Customer.
 SELECT o.customer_id, c.first_name, c.last_name, MAX(total_price) AS max_order_amount
 FROM Orders o
-JOIN Customer c on c.customer_id = o.customer_id
+JOIN Customers c on c.customer_id = o.customer_id
 GROUP BY o.customer_id,  c.first_name, c.last_name;
 
 --14. Get Customers Who Placed Orders Totaling Over $1000.
 SELECT o.customer_id, c.first_name, c.last_name, SUM(o.total_price) AS price
 FROM Orders o
-JOIN Customer c on c.customer_id = o.customer_id
+JOIN Customers c on c.customer_id = o.customer_id
 GROUP BY o.customer_id, c.first_name, c.last_name
 HAVING SUM(o.total_price) > 1000;
 
@@ -210,7 +210,7 @@ WHERE product_id NOT IN
 
 --16. Subquery to Find Customers Who Haven't Placed Orders.
 SELECT *
-FROM Customer 
+FROM Customers 
 WHERE customer_id NOT IN 
 	(SELECT customer_id FROM Orders)
 
